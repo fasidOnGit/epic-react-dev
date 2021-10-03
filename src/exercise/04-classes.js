@@ -11,56 +11,56 @@ import {useLocalStorageState} from '../utils'
 // 🦉 You've learned all the hooks you need to know to refactor this Board
 // component to hooks. So, let's make it happen!
 
-function Board() {
-  const [squares, setSquares] = useLocalStorageState('squares', Array(9).fill(null))
+// function Board() {
+//   const [squares, setSquares] = useLocalStorageState('squares', Array(9).fill(null))
 
-  const selectSquare = square => {
-    const nextValue = calculateNextValue(squares)
-    if (calculateWinner(squares) || squares[square]) {
-      return
-    }
-    const squaresCopy = [...squares]
-    squaresCopy[square] = nextValue
-    setSquares(squaresCopy)
-  }
-  const renderSquare = i => (
-    <button className='square' onClick={() => selectSquare(i)}>
-      {squares[i]}
-    </button>
-  )
+//   const selectSquare = square => {
+//     const nextValue = calculateNextValue(squares)
+//     if (calculateWinner(squares) || squares[square]) {
+//       return
+//     }
+//     const squaresCopy = [...squares]
+//     squaresCopy[square] = nextValue
+//     setSquares(squaresCopy)
+//   }
+//   const renderSquare = i => (
+//     <button className='square' onClick={() => selectSquare(i)}>
+//       {squares[i]}
+//     </button>
+//   )
 
-  const restart = () => {
-    setSquares(Array(9).fill(null))
-  }
+//   const restart = () => {
+//     setSquares(Array(9).fill(null))
+//   }
 
-  const nextValue = calculateNextValue(squares)
-  const winner = calculateWinner(squares)
-  let status = calculateStatus(winner, squares, nextValue)
+//   const nextValue = calculateNextValue(squares)
+//   const winner = calculateWinner(squares)
+//   let status = calculateStatus(winner, squares, nextValue)
 
-  return (
-    <div>
-      <div className='status'>{status}</div>
-      <div className='board-row'>
-        {renderSquare(0)}
-        {renderSquare(1)}
-        {renderSquare(2)}
-      </div>
-      <div className='board-row'>
-        {renderSquare(3)}
-        {renderSquare(4)}
-        {renderSquare(5)}
-      </div>
-      <div className='board-row'>
-        {renderSquare(6)}
-        {renderSquare(7)}
-        {renderSquare(8)}
-      </div>
-      <button className='restart' onClick={restart}>
-        restart
-      </button>
-    </div>
-  )
-}
+//   return (
+//     <div>
+//       <div className='status'>{status}</div>
+//       <div className='board-row'>
+//         {renderSquare(0)}
+//         {renderSquare(1)}
+//         {renderSquare(2)}
+//       </div>
+//       <div className='board-row'>
+//         {renderSquare(3)}
+//         {renderSquare(4)}
+//         {renderSquare(5)}
+//       </div>
+//       <div className='board-row'>
+//         {renderSquare(6)}
+//         {renderSquare(7)}
+//         {renderSquare(8)}
+//       </div>
+//       <button className='restart' onClick={restart}>
+//         restart
+//       </button>
+//     </div>
+//   )
+// }
 
 function BoardV1({onClick, squares = Array(9).fill(null)}) {
   const renderSquare = i => (
@@ -71,17 +71,17 @@ function BoardV1({onClick, squares = Array(9).fill(null)}) {
 
   return (
     <div>
-      <div className='board-row'>
+      <div className="board-row">
         {renderSquare(0)}
         {renderSquare(1)}
         {renderSquare(2)}
       </div>
-      <div className='board-row'>
+      <div className="board-row">
         {renderSquare(3)}
         {renderSquare(4)}
         {renderSquare(5)}
       </div>
-      <div className='board-row'>
+      <div className="board-row">
         {renderSquare(6)}
         {renderSquare(7)}
         {renderSquare(8)}
@@ -91,11 +91,14 @@ function BoardV1({onClick, squares = Array(9).fill(null)}) {
 }
 
 function Game() {
-  const [history, setHistory] = useLocalStorageState(
-    'tic-tac-toe:history', [Array(9).fill(null)],
+  const [history, setHistory] = useLocalStorageState('tic-tac-toe:history', [
+    Array(9).fill(null),
+  ])
+  const [index, setIndex] = useLocalStorageState(
+    'tic-tac-toe:index',
+    history.length - 1,
   )
-  const [index, setIndex] = useLocalStorageState('tic-tac-toe:index', history.length - 1)
-  const currentSquares = history[index];
+  const currentSquares = history[index]
 
   const selectSquare = square => {
     const nextValue = calculateNextValue(currentSquares)
@@ -104,13 +107,9 @@ function Game() {
     }
     const squaresCopy = [...currentSquares]
     squaresCopy[square] = nextValue
-    history.length = index + 1;
-    setIndex(
-      history.push(squaresCopy) - 1
-    )
-    setHistory(
-      [...history]
-    )
+    history.length = index + 1
+    setIndex(history.push(squaresCopy) - 1)
+    setHistory([...history])
   }
 
   const restart = () => {
@@ -118,24 +117,28 @@ function Game() {
     setIndex(0)
   }
 
-  const moves = history.map(
-    (h, i) => (<li key={i}><button onClick={() => setIndex(i)} disabled={index === i}>{i === 0 ? 'Go to game start' : `Go to move #${i}`} {index === i ? ' (current)' : ''}</button></li>)
-  )
-
+  const moves = history.map((h, i) => (
+    <li key={i}>
+      <button onClick={() => setIndex(i)} disabled={index === i}>
+        {i === 0 ? 'Go to game start' : `Go to move #${i}`}{' '}
+        {index === i ? ' (current)' : ''}
+      </button>
+    </li>
+  ))
 
   const nextValue = calculateNextValue(currentSquares)
   const winner = calculateWinner(currentSquares)
   let status = calculateStatus(winner, currentSquares, nextValue)
   return (
-    <div className='game'>
-      <div className='game-board'>
+    <div className="game">
+      <div className="game-board">
         <BoardV1 onClick={selectSquare} squares={currentSquares} />
-        <button className='restart' onClick={restart}>
+        <button className="restart" onClick={restart}>
           restart
         </button>
       </div>
       <div className={'game-info'}>
-        <div className='status'>{status}</div>
+        <div className="status">{status}</div>
         <ol>{moves}</ol>
       </div>
     </div>
@@ -146,8 +149,8 @@ function calculateStatus(winner, squares, nextValue) {
   return winner
     ? `Winner: ${winner}`
     : squares.every(Boolean)
-      ? `Scratch: Cat's game`
-      : `Next player: ${nextValue}`
+    ? `Scratch: Cat's game`
+    : `Next player: ${nextValue}`
 }
 
 function calculateNextValue(squares) {
